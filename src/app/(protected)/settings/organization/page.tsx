@@ -68,7 +68,7 @@ function SettingsSkeleton() {
 
 export default function OrganizationSettingsPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6">
+    <div className="mx-auto max-w-2xl space-y-8">
       <h1 className="text-2xl font-bold tracking-tight">
         Configuracoes da Organizacao
       </h1>

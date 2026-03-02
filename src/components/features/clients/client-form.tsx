@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { clientSchema, type ClientFormValues } from "@/lib/validations/client";
+import { phoneMask, phoneUnmask } from "@/lib/masks/phone";
 import { createClient, updateClient } from "@/actions/clients";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,8 +127,9 @@ export function ClientForm({ mode, defaultValues, clientId }: ClientFormProps) {
               <FormControl>
                 <Input
                   placeholder="(00) 00000-0000"
-                  {...field}
-                  value={field.value ?? ""}
+                  value={phoneMask(field.value ?? "")}
+                  onChange={(e) => field.onChange(phoneUnmask(e.target.value))}
+                  maxLength={15}
                 />
               </FormControl>
               <FormMessage />

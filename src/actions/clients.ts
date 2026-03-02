@@ -218,9 +218,10 @@ export async function deleteClient(
   }
 }
 
-export async function inviteClient(
+export async function generateInviteLink(
   clientId: string,
-): Promise<{ success: true } | { error: string }> {
+  { forceNew = false }: { forceNew?: boolean } = {},
+): Promise<{ success: true; link: string } | { error: string }> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -248,7 +249,34 @@ export async function inviteClient(
     return { error: "Cliente nao encontrado" };
   }
 
-  // Invalidate existing pending invitations for this client
+  // Load organization data to build the link
+  const org = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { slug: true },
+  });
+
+  if (!org) {
+    return { error: "Organizacao nao encontrada" };
+  }
+
+  // Reuse existing pending invitation if it hasn't expired
+  if (!forceNew) {
+    const existing = await prisma.clientInvitation.findFirst({
+      where: {
+        clientId,
+        status: "pending",
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (existing) {
+      const magicLink = `${process.env.NEXT_PUBLIC_APP_URL}/portal/${org.slug}/verify?token=${existing.token}`;
+      return { success: true, link: magicLink };
+    }
+  }
+
+  // Invalidate any remaining expired/pending invitations
   await prisma.clientInvitation.updateMany({
     where: {
       clientId,
@@ -270,7 +298,62 @@ export async function inviteClient(
     },
   });
 
-  // Load organization data for branded email
+  const magicLink = `${process.env.NEXT_PUBLIC_APP_URL}/portal/${org.slug}/verify?token=${invitation.token}`;
+
+  // Update client invitation status
+  await prisma.client.update({
+    where: { id: clientId },
+    data: { invitationStatus: "pending" },
+  });
+
+  revalidatePath("/clients");
+  revalidatePath(`/clients/${clientId}`);
+
+  return { success: true, link: magicLink };
+}
+
+export async function sendInviteEmail(
+  clientId: string,
+): Promise<{ success: true } | { error: string }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: "Nao autenticado" };
+  }
+
+  const organizationId = session.session.activeOrganizationId;
+
+  if (!organizationId) {
+    return { error: "Nenhuma organizacao selecionada" };
+  }
+
+  const client = await prisma.client.findFirst({
+    where: {
+      id: clientId,
+      organizationId,
+      deletedAt: null,
+    },
+  });
+
+  if (!client) {
+    return { error: "Cliente nao encontrado" };
+  }
+
+  // Find the latest pending invitation
+  const invitation = await prisma.clientInvitation.findFirst({
+    where: {
+      clientId,
+      status: "pending",
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!invitation) {
+    return { error: "Nenhum convite pendente. Gere um novo link primeiro." };
+  }
+
   const org = await prisma.organization.findUnique({
     where: { id: organizationId },
     select: { name: true, slug: true, logo: true, primaryColor: true },
@@ -317,15 +400,6 @@ export async function inviteClient(
   } catch {
     return { error: "Erro ao enviar convite. Tente novamente." };
   }
-
-  // Update client invitation status
-  await prisma.client.update({
-    where: { id: clientId },
-    data: { invitationStatus: "pending" },
-  });
-
-  revalidatePath("/clients");
-  revalidatePath(`/clients/${clientId}`);
 
   return { success: true };
 }

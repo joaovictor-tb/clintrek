@@ -75,8 +75,8 @@ async function ClientsContent({
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Clientes</h1>
         <Button asChild>
           <Link href="/clients/new">
@@ -86,31 +86,27 @@ async function ClientsContent({
         </Button>
       </div>
 
-      <div className="mb-6">
-        <ClientSearch />
-      </div>
+      <ClientSearch />
 
       <ClientTable clients={clients} />
 
-      <div className="mt-6">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          searchQuery={search || undefined}
-        />
-      </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        searchQuery={search || undefined}
+      />
     </div>
   );
 }
 
 function ClientsLoading() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <Skeleton className="h-8 w-32" />
         <Skeleton className="h-9 w-32" />
       </div>
-      <Skeleton className="mb-6 h-9 w-full max-w-sm" />
+      <Skeleton className="h-9 w-full max-w-sm" />
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-12 w-full" />

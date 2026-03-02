@@ -24,15 +24,13 @@ async function NewClientContent() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-6">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/clients">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
-      </div>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/clients">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Voltar
+        </Link>
+      </Button>
 
       <Card>
         <CardHeader>
@@ -48,8 +46,8 @@ async function NewClientContent() {
 
 function NewClientLoading() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <Skeleton className="mb-6 h-8 w-24" />
+    <div className="mx-auto max-w-2xl space-y-6">
+      <Skeleton className="h-8 w-24" />
       <div className="space-y-4">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-9 w-full" />

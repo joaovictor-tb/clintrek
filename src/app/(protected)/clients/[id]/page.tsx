@@ -67,22 +67,20 @@ async function ClientDetailContent({
   const status = statusMap[client.invitationStatus] ?? statusMap.none;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-6">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/clients">
-            <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
-            Voltar
-          </Link>
-        </Button>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/clients">
+          <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+          Voltar
+        </Link>
+      </Button>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">{client.name}</CardTitle>
             <div className="flex items-center gap-2">
-              <InviteButton clientId={client.id} />
+              <InviteButton clientId={client.id} clientName={client.name} />
               <Button variant="outline" size="sm" asChild>
                 <Link href={`/clients/${client.id}/edit`}>
                   <Pencil className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -151,8 +149,8 @@ async function ClientDetailContent({
 
 function ClientDetailLoading() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8" role="status" aria-label="Carregando detalhes do cliente">
-      <Skeleton className="mb-6 h-8 w-24" />
+    <div className="mx-auto max-w-3xl space-y-6" role="status" aria-label="Carregando detalhes do cliente">
+      <Skeleton className="h-8 w-24" />
       <div className="space-y-4 rounded-lg border p-6">
         <Skeleton className="h-8 w-48" />
         <div className="grid gap-4 sm:grid-cols-2">
