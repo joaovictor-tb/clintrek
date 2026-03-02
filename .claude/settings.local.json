@@ -6,7 +6,10 @@
       "Bash(pwsh:*)",
       "Bash(powershell:*)",
       "Bash(chmod +x:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(git fetch:*)",
+      "WebSearch",
+      "Bash(npm run:*)"
     ]
   }
 }

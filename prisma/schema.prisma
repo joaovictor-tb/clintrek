@@ -80,14 +80,19 @@ model Verification {
 }
 
 model Organization {
-  id          String       @id
-  name        String
-  slug        String
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
+  id           String       @id
+  name         String
+  slug         String
+  logo         String?
+  primaryColor String?
+  accentColor  String?
+  createdAt    DateTime
+  metadata     String?
+  members      Member[]
+  invitations  Invitation[]
+  clients           Client[]
+  clientInvitations ClientInvitation[]
+  clientSessions    ClientSession[]
 
   @@unique([slug])
   @@map("organization")
@@ -122,4 +127,58 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+model Client {
+  id               String             @id @default(cuid())
+  organizationId   String
+  organization     Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name             String
+  email            String
+  phone            String?
+  notes            String?
+  invitationStatus String             @default("none")
+  deletedAt        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  invitations      ClientInvitation[]
+  sessions         ClientSession[]
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@index([organizationId, deletedAt])
+  @@map("client")
+}
+
+model ClientInvitation {
+  id             String       @id @default(cuid())
+  clientId       String
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  token          String
+  status         String       @default("pending")
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@unique([token])
+  @@index([clientId])
+  @@index([organizationId])
+  @@map("client_invitation")
+}
+
+model ClientSession {
+  id             String       @id @default(cuid())
+  clientId       String
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  token          String
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+
+  @@unique([token])
+  @@index([clientId])
+  @@map("client_session")
 }
