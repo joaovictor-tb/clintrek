@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { organizationNameSchema, type OrgFormValues } from "@/lib/validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { setupOrganizationBranding } from "@/actions/organization";
@@ -32,10 +32,9 @@ function generateSlug(name: string): string {
 export function CreateOrgForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [showBranding, setShowBranding] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [primaryColor, setPrimaryColor] = useState("#7c3aed");
-  const [accentColor, setAccentColor] = useState("#3b82f6");
+  const [accentColor, setAccentColor] = useState("#ede9fe");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<OrgFormValues>({
@@ -77,9 +76,9 @@ export function CreateOrgForm() {
     // Upload branding if provided
     const hasLogo = fileInputRef.current?.files?.[0];
     const hasColors =
-      primaryColor !== "#7c3aed" || accentColor !== "#3b82f6";
+      primaryColor !== "#7c3aed" || accentColor !== "#ede9fe";
 
-    if (showBranding && (hasLogo || hasColors)) {
+    if (hasLogo || hasColors) {
       const formData = new FormData();
       if (hasLogo) {
         formData.append("logo", fileInputRef.current!.files![0]);
@@ -110,87 +109,68 @@ export function CreateOrgForm() {
           )}
         />
 
-        <button
-          type="button"
-          onClick={() => setShowBranding(!showBranding)}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-          aria-expanded={showBranding}
-          aria-controls="branding-section"
-        >
-          {showBranding ? (
-            <ChevronDown className="h-4 w-4" aria-hidden="true" />
-          ) : (
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        <div className="space-y-2">
+          <Label htmlFor="onboard-logo">Logo</Label>
+          {logoPreview && (
+            <img
+              src={logoPreview}
+              alt="Preview do logo"
+              className="h-16 w-16 rounded border object-contain"
+            />
           )}
-          Personalizar aparencia (opcional)
-        </button>
+          <Input
+            id="onboard-logo"
+            type="file"
+            accept="image/png,image/jpeg,image/svg+xml"
+            ref={fileInputRef}
+            onChange={handleLogoChange}
+          />
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG ou SVG. Max 2MB.
+          </p>
+        </div>
 
-        {showBranding && (
-          <div id="branding-section" className="space-y-4 rounded-lg border p-4">
-            <div className="space-y-2">
-              <Label htmlFor="onboard-logo">Logo</Label>
-              {logoPreview && (
-                <img
-                  src={logoPreview}
-                  alt="Preview do logo"
-                  className="h-16 w-16 rounded border object-contain"
-                />
-              )}
-              <Input
-                id="onboard-logo"
-                type="file"
-                accept="image/png,image/jpeg,image/svg+xml"
-                ref={fileInputRef}
-                onChange={handleLogoChange}
-              />
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG ou SVG. Max 2MB.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="onboard-primary">Cor primaria</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="onboard-primary"
-                  type="color"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="h-9 w-10 cursor-pointer rounded border p-1"
-                />
-                <Input
-                  type="text"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  placeholder="#7c3aed"
-                  className="max-w-32"
-                  aria-label="Valor hexadecimal da cor primaria"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="onboard-accent">Cor de destaque</Label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="onboard-accent"
-                  type="color"
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  className="h-9 w-10 cursor-pointer rounded border p-1"
-                />
-                <Input
-                  type="text"
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  placeholder="#3b82f6"
-                  className="max-w-32"
-                  aria-label="Valor hexadecimal da cor de destaque"
-                />
-              </div>
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="onboard-primary">Cor primaria</Label>
+          <div className="flex items-center gap-2">
+            <input
+              id="onboard-primary"
+              type="color"
+              value={primaryColor}
+              onChange={(e) => setPrimaryColor(e.target.value)}
+              className="h-9 w-10 cursor-pointer rounded border p-1"
+            />
+            <Input
+              type="text"
+              value={primaryColor}
+              onChange={(e) => setPrimaryColor(e.target.value)}
+              placeholder="#7c3aed"
+              className="max-w-32"
+              aria-label="Valor hexadecimal da cor primaria"
+            />
           </div>
-        )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="onboard-accent">Cor secundaria</Label>
+          <div className="flex items-center gap-2">
+            <input
+              id="onboard-accent"
+              type="color"
+              value={accentColor}
+              onChange={(e) => setAccentColor(e.target.value)}
+              className="h-9 w-10 cursor-pointer rounded border p-1"
+            />
+            <Input
+              type="text"
+              value={accentColor}
+              onChange={(e) => setAccentColor(e.target.value)}
+              placeholder="#ede9fe"
+              className="max-w-32"
+              aria-label="Valor hexadecimal da cor secundaria"
+            />
+          </div>
+        </div>
 
         {error && (
           <p className="text-sm text-destructive" role="alert" aria-live="polite">

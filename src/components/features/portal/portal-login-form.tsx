@@ -34,8 +34,8 @@ interface PortalLoginFormProps {
 }
 
 const errorMessages: Record<string, string> = {
-  expired: "Seu link expirou. Solicite um novo acesso abaixo.",
-  invalid: "Link invalido. Solicite um novo acesso abaixo.",
+  expired: "Seu link expirou. Tente entrar novamente.",
+  invalid: "Link invalido. Tente entrar novamente.",
   unavailable: "Acesso indisponivel. Entre em contato com a clinica.",
 };
 
@@ -79,8 +79,8 @@ export function PortalLoginForm({ orgSlug, error }: PortalLoginFormProps) {
             <Mail className="h-10 w-10 text-primary" aria-hidden="true" />
             <p className="text-lg font-medium">Verifique seu email</p>
             <p className="text-sm text-muted-foreground">
-              Enviamos um link de acesso para o email informado. Ele expira em
-              15 minutos.
+              Se este email estiver cadastrado, enviamos um link de acesso.
+              Ele expira em 15 minutos.
             </p>
           </div>
         </CardContent>
@@ -144,7 +144,7 @@ export function PortalLoginForm({ orgSlug, error }: PortalLoginFormProps) {
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
               )}
-              Solicitar acesso
+              Entrar com email
             </Button>
           </form>
         </Form>

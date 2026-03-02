@@ -50,7 +50,7 @@ export async function updateOrganizationBranding(
   if (accentColor && accentColor.trim() !== "") {
     const result = hexColorSchema.safeParse(accentColor);
     if (!result.success) {
-      return { error: "Cor de destaque invalida. Use o formato #RRGGBB" };
+      return { error: "Cor secundaria invalida. Use o formato #RRGGBB" };
     }
   }
 
@@ -156,7 +156,7 @@ export async function setupOrganizationBranding(
   if (accentColor && accentColor.trim() !== "") {
     const result = hexColorSchema.safeParse(accentColor);
     if (!result.success) {
-      return { error: "Cor de destaque invalida. Use o formato #RRGGBB" };
+      return { error: "Cor secundaria invalida. Use o formato #RRGGBB" };
     }
   }
 

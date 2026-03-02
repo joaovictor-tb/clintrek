@@ -16,11 +16,18 @@ export function BrandingProvider({
   }
 
   const style: Record<string, string> = {};
+
   if (primaryColor) {
-    style["--org-primary"] = primaryColor;
+    style["--primary"] = primaryColor;
+    style["--ring"] = primaryColor;
+    style["--sidebar-primary"] = primaryColor;
+    style["--sidebar-ring"] = primaryColor;
+    style["--chart-1"] = primaryColor;
   }
+
   if (accentColor) {
-    style["--org-accent"] = accentColor;
+    style["--accent"] = accentColor;
+    style["--sidebar-accent"] = accentColor;
   }
 
   return <div style={style}>{children}</div>;

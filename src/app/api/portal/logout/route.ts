@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  deleteClientSession,
-  clearClientSessionCookie,
-} from "@/lib/client-auth";
+import { deleteClientSession } from "@/lib/client-auth";
+
+const COOKIE_NAME = "clintrek-client-session";
 
 function extractOrgSlugFromUrl(url: string): string | null {
   try {
@@ -15,11 +14,10 @@ function extractOrgSlugFromUrl(url: string): string | null {
 }
 
 export async function POST(request: NextRequest) {
-  // Delete session if cookie exists
-  const token = request.cookies.get("clintrek-client-session")?.value;
+  // Delete session from DB if cookie exists
+  const token = request.cookies.get(COOKIE_NAME)?.value;
   if (token) {
     await deleteClientSession(token);
-    await clearClientSessionCookie();
   }
 
   // Determine orgSlug for redirect
@@ -31,24 +29,34 @@ export async function POST(request: NextRequest) {
     orgSlug = extractOrgSlugFromUrl(referer);
   }
 
-  // Fallback: try from request body
+  // Fallback: try from form body (HTML form sends urlencoded, not JSON)
   if (!orgSlug) {
     try {
-      const body = await request.json();
-      if (body?.orgSlug && typeof body.orgSlug === "string") {
-        orgSlug = body.orgSlug;
+      const formData = await request.formData();
+      const value = formData.get("orgSlug");
+      if (typeof value === "string" && value) {
+        orgSlug = value;
       }
     } catch {
-      // Body is not JSON or empty — ignore
+      // Body empty or not parseable — ignore
     }
   }
 
-  // Final fallback: redirect to root
-  if (!orgSlug) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+  const redirectUrl = orgSlug
+    ? new URL(`/portal/${orgSlug}/login`, request.url)
+    : new URL("/", request.url);
 
-  return NextResponse.redirect(
-    new URL(`/portal/${orgSlug}/login`, request.url),
-  );
+  // 303 See Other — browser follows with GET
+  const response = NextResponse.redirect(redirectUrl, 303);
+
+  // Clear the cookie on the response itself
+  response.cookies.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/portal",
+    maxAge: 0,
+  });
+
+  return response;
 }

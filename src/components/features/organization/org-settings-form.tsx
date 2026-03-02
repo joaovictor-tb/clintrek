@@ -25,7 +25,7 @@ export function OrgSettingsForm({
     currentPrimaryColor ?? "#7c3aed",
   );
   const [accentColor, setAccentColor] = useState(
-    currentAccentColor ?? "#3b82f6",
+    currentAccentColor ?? "#ede9fe",
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -128,7 +128,7 @@ export function OrgSettingsForm({
 
       {/* Accent Color */}
       <div className="space-y-3">
-        <Label htmlFor="accentColor">Cor de Destaque</Label>
+        <Label htmlFor="accentColor">Cor Secundaria</Label>
         <div className="flex items-center gap-3">
           <input
             id="accentColor"
@@ -136,15 +136,15 @@ export function OrgSettingsForm({
             value={accentColor}
             onChange={(e) => setAccentColor(e.target.value)}
             className="h-10 w-12 cursor-pointer rounded border p-1"
-            aria-label="Seletor de cor de destaque"
+            aria-label="Seletor de cor secundaria"
           />
           <Input
             type="text"
             value={accentColor}
             onChange={(e) => setAccentColor(e.target.value)}
-            placeholder="#3b82f6"
+            placeholder="#ede9fe"
             className="max-w-40"
-            aria-label="Valor hexadecimal da cor de destaque"
+            aria-label="Valor hexadecimal da cor secundaria"
           />
         </div>
       </div>

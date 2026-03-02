@@ -1,8 +1,9 @@
 "use client";
 
+import { LayoutDashboard, Settings, Users } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -62,23 +63,19 @@ export function AppSidebar({ org, user }: AppSidebarProps) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
                 {org?.logo ? (
-                  <img
+                  <Image
                     src={`/api${org.logo}`}
                     alt={org.name}
-                    className="h-6 w-6 object-contain"
+                    width={120}
+                    height={20}
+                    className="h-5 w-auto max-w-[120px] object-contain"
+                    unoptimized
                   />
                 ) : (
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <span className="text-sm font-bold">
-                      {(org?.name ?? "C")[0].toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
+                  <span className="truncate text-sm font-semibold">
                     {org?.name ?? "ClinTrek"}
                   </span>
-                </div>
+                )}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
